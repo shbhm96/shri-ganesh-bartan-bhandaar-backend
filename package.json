@@ -5,8 +5,7 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
-    "start": "node server",
-    "server": "nodemon server",
+    "build": "netlify deploy --prod",
     "client": "npm start --prefix frontend",
     "data:import": "node seeder",
     "data:destroy": "node seeder -d"
@@ -23,7 +22,10 @@
     "jsonwebtoken": "^9.0.0",
     "mongodb": "^5.5.0",
     "mongoose": "^7.1.1",
-    "multer": "^1.4.5-lts.1"
+    "multer": "^1.4.5-lts.1",
+    "netlify-cli": "^15.2.0",
+    "netlify-lambda": "^2.0.16",
+    "serverless-http": "^3.2.0"
   },
   "devDependencies": {
     "concurrently": "^8.0.1",
