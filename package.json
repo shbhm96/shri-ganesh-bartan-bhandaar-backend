@@ -5,7 +5,8 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
-    "build": "netlify deploy --prod",
+    "start": "./node_modules/.bin/netlify-lambda build src",
+    "build": "NODE_OPTION=--openssl-legecy-provider ./node_modules/.bin/netlify-lambda build src",
     "client": "npm start --prefix frontend",
     "data:import": "node seeder",
     "data:destroy": "node seeder -d"

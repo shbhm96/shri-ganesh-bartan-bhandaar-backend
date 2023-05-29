@@ -1,11 +1,11 @@
 import express from "express";
 
-import productRoutes from "./routes/productsRoutes.js"
-import userRoutes from "./routes/userRoutes.js"
-import orderRoutes from "./routes/orderRoutes.js"
-import { errorHandler, notFound } from './middleware/errorMiddleware.js';
-import adminRoutes from "./routes/adminRoutes.js"
-import uploadRoutes from "./routes/uploadRoutes.js"
+import productRoutes from "./productsRoutes.js"
+import userRoutes from "./userRoutes.js"
+import orderRoutes from "./orderRoutes.js"
+import { errorHandler, notFound } from '../middleware/errorMiddleware.js';
+import adminRoutes from "./adminRoutes.js"
+import uploadRoutes from "./uploadRoutes.js"
 
 
 const router = express.Router()
