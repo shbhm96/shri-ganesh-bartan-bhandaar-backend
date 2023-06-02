@@ -1,6 +1,7 @@
 import asyncHandler from "express-async-handler"
 import User from "../models/usersModel.js";
 import generateToken from "../utils/generateTokens.js";
+import Product from "../models/productModel.js";
 
 
 const getAllUsersForAdmin = asyncHandler(async(req,res) => {
@@ -63,4 +64,9 @@ const deleteProduct = asyncHandler(async(req,res) => {
     }
     res.json(product)
 })
-export {getAllUsersForAdmin,deleteUserForAdmin,getUserById,updateUserById,deleteProduct}
+
+const createProduct = asyncHandler(async(req,res)=>{
+    console.log(req.body)
+    return
+})
+export {getAllUsersForAdmin,deleteUserForAdmin,getUserById,updateUserById,deleteProduct,createProduct}

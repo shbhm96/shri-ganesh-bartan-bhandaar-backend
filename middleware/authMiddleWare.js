@@ -3,9 +3,10 @@ import asyncHandler from "express-async-handler"
 import User from "../models/usersModel.js";
 import dotenv from "dotenv";
 
+dotenv.config()
 const protectValidUser = asyncHandler(async(req,res,next)=>{
     let token;
-    dotenv.config()
+    console.log("token",token)
 
     if(req.headers.authorization && req.headers.authorization.startsWith('Bearer')){
         try{
