@@ -10,6 +10,7 @@ import { errorHandler, notFound } from './middleware/errorMiddleware.js';
 import adminRoutes from "./routes/adminRoutes.js"
 import uploadRoutes from "./routes/uploadRoutes.js"
 import cors from 'cors'
+import morgan from "morgan";
 
 dotenv.config()
 
@@ -21,9 +22,10 @@ app.use(express.json())
 
 app.use(cors())
 
-app.get('/',(req,res)=>{
-    res.send("API is running....")
-})
+if(process.env.NODE_ENV==="development"){
+    app.use(morgan("dev"))
+}
+    
 
 app.use("/api/test",(req,res)=>{
     res.send("TEST SUCCESSFULL")
@@ -36,6 +38,17 @@ app.use("/api/upload",uploadRoutes)
 
 const __dirname = path.resolve()
 app.use("/uploads",express.static(path.join(__dirname,'/uploads')))
+
+if(process.env.NODE_ENV==="development"){
+    app.use(express.static(path.join(__dirname,"/build")))
+    app.get("*",(req,res)=>{
+        res.sendFile(path.resolve(__dirname,"build","index.html"))
+    })
+}else{
+    app.get("/",(req,res)=>{
+        res.send("API is running")
+    })
+}
 
 app.use(notFound)
 

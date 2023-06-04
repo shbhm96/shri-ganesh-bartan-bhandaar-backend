@@ -10,9 +10,9 @@ const getAllUsersForAdmin = asyncHandler(async(req,res) => {
 })
 const deleteUserForAdmin = asyncHandler(async(req,res)=>{
     const user = await User.findById(req.params.id)
-
+    console.log("user",user)
     if(user){
-        await user.remove()
+        await  user.deleteOne()
         res.json({message:"User removed"})
     }else{
         res.status(404)
@@ -33,6 +33,7 @@ const getUserById = asyncHandler(async(req,res)=>{
 
 
 const updateUserById = asyncHandler(async(req,res)=>{
+    
     const user = await User.findById(req.params.id).select("-password")
     if(user){
         user.name = req.body.name || user.name
@@ -66,7 +67,64 @@ const deleteProduct = asyncHandler(async(req,res) => {
 })
 
 const createProduct = asyncHandler(async(req,res)=>{
-    console.log(req.body)
-    return
+    const product = new Product({
+        name: 'Sample name',
+        price: 0,
+        user: req.user._id,
+        image: '/images/sample.jpg',
+        brand: 'Sample brand',
+        category: 'Sample category',
+        countInStock: 0,
+        numReviews: 0,
+        description: 'Sample description',
+    })
+
+    if(product){
+        const createdProduct = await product.save()
+        return res.status(201).json(createdProduct)
+    }else{
+        res.status(403)
+        throw new Error("Product Can't be Created")
+    }
+    
 })
-export {getAllUsersForAdmin,deleteUserForAdmin,getUserById,updateUserById,deleteProduct,createProduct}
+
+const updateProduct = asyncHandler(async (req, res) => {
+    const {
+      name,
+      price,
+      description,
+      image,
+      brand,
+      category,
+      countInStock,
+    } = req.body
+  
+    const product = await Product.findById(req.params.id)
+  
+    if (product) {
+      product.name = name
+      product.price = price
+      product.description = description
+      product.image = image
+      product.brand = brand
+      product.category = category
+      product.countInStock = countInStock
+  
+      const updatedProduct = await product.save()
+      return res.json(updatedProduct)
+    } else {
+      res.status(404)
+      throw new Error('Product not found')
+    }
+  })
+
+export {
+    getAllUsersForAdmin,
+    deleteUserForAdmin,
+    getUserById,
+    updateUserById,
+    deleteProduct,
+    createProduct,
+    updateProduct
+}
