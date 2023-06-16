@@ -65,7 +65,6 @@ const uploadFile = (file) =>{
 }
 
 //download  file from s3
-
 const getFileStream = (fileKey) => {
     const downParams = {
         Key: fileKey,
