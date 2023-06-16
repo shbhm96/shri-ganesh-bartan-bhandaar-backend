@@ -5,8 +5,8 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
-    "start": "node server.js",
-    "server": "nodemon server.js",
+    "start": "node --trace-warnings server.js",
+    "server": "nodemon server.js ",
     "build": "npm i",
     "client": "npm start --prefix frontend",
     "data:import": "node seeder",
@@ -15,9 +15,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "aws-sdk": "^2.1398.0",
     "bcryptjs": "^2.4.3",
     "colors": "^1.4.0",
     "cors": "^2.8.5",
+    "crypto": "^1.0.1",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "express-async-handler": "^1.2.0",
@@ -27,7 +29,8 @@
     "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.1",
     "react-s3": "^1.3.1",
-    "twilio": "^4.11.2"
+    "twilio": "^4.11.2",
+    "util": "^0.12.5"
   },
   "devDependencies": {
     "concurrently": "^8.0.1",

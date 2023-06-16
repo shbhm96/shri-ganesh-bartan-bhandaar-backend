@@ -11,13 +11,13 @@ const userSchema = mongoose.Schema({
         required:true,
         unique:true
     },
-    // mobile:{
-    //     type:Number,
-    //     required:true,
-    //     unique:true,
-    //     length:10,
-    //     default:0
-    // },
+    mobile:{
+        type:Number,
+        required:true,
+        unique:true,
+        length:10,
+        default:0
+    },
     password:{
         type:String,
         required:true

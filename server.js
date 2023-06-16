@@ -11,6 +11,9 @@ import adminRoutes from "./routes/adminRoutes.js"
 import uploadRoutes from "./routes/uploadRoutes.js"
 import cors from 'cors'
 import morgan from "morgan";
+import multer from "multer";
+import { uploadFile,getFileStream } from "./config/s3.js";
+
 
 dotenv.config()
 
@@ -34,7 +37,27 @@ app.use("/api/products",productRoutes)
 app.use("/api/users",userRoutes)
 app.use("/api/orders",orderRoutes)
 app.use("/api/admin",adminRoutes)
-app.use("/api/upload",uploadRoutes)
+
+
+const upload = multer({dest:"uploads"})
+
+app.get("/images/:key",(req,res)=>{
+    const key = req.params.key
+    const readStream = getFileStream(key)
+    readStream.pipe(res)
+})
+
+app.use("/api/images",upload.single("image"),async(req,res)=>{
+    const file = req.file
+    const result = await uploadFile(file)
+    console.log(result)
+    const description = req.body.description
+    res.send({imagePath:`/images/${result.Key}`})
+})
+
+
+//saving images in S3 buckets
+// app.use("/s3Url",s3Routes)
 
 const __dirname = path.resolve()
 app.use("/uploads",express.static(path.join(__dirname,'/uploads')))
