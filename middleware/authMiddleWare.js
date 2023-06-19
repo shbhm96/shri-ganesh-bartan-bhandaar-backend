@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 dotenv.config()
 const protectValidUser = asyncHandler(async(req,res,next)=>{
     let token;
+    console.log("Kill",req.headers.authorization)
     if(req.headers.authorization && req.headers.authorization.startsWith('Bearer')){
         try{
             token = req.headers.authorization.split(" ")[1]

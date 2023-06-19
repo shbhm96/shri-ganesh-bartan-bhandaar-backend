@@ -1,13 +1,19 @@
 import express from "express";
-import 
-{ 
-    s3UploadImageUrl
-} from "../controller/s3Controller.js";
+import {
+    getImage,
+    uploadImage
+} from "../config/s3.js"
+import multer from "multer";
 
 const router = express.Router()
 
-const upload = multer({dest:"uploads"})
+const storage = multer.memoryStorage()
+const upload = multer({storage:storage})
 
-router.route("/",upload.single("images"),s3UploadImageUrl)
+router.route("/:key",getImage)
+
+router.route("/",(req,res)=>{
+    console.log("eHeub")
+})
 
 export default router

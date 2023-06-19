@@ -1,76 +1,36 @@
-// import aws from "aws-sdk";
-// import crypto from "crypto";
-// import dotenv from "dotenv"
-// import { promisify } from "util";
+import { S3Client,GetObjectCommand } from "@aws-sdk/client-s3";
+import {getSignedUrl} from "@aws-sdk/s3-request-presigner"
+import dotenv from "dotenv";
+import asyncHandler from "express-async-handler"
 
-// dotenv.config()
-
-// const region = process.env.REGION
-// const bucketName = process.env.BUCKET_NAME
-// const accessKeyId = process.env.ACCESS_KEY_ID
-// const secretAccessKey =process.env.SECRET_ACCESS_KEY
-
-
-// const s3 = new aws.S3({
-//     region,
-//     accessKeyId,
-//     secretAccessKey,
-//     signatureVersion:"v4"
-// })
-
-// const randomBytesString =  promisify(crypto.randomBytes)
-
-// export const generateUploadURL = async() =>{
-//     const rawBytes = await randomBytesString(16)
-//     const imageName = rawBytes.toString("hex")
-
-//     const params = ({
-//         Bucket : bucketName,
-//         Key : imageName,
-//         Expires : 60
-//     })
-
-//     const uploadUrl = await s3.getSignedUrlPromise("putObject",params)
-//     return uploadUrl
-// }
-
-import S3 from "aws-sdk/clients/s3.js"
-import dotenv from "dotenv"
-import fs from "fs"
 dotenv.config()
 
-const bucketName = process.env.AWS_BUCKET_REGION 
-const region = process.env.AWS_BUCKET_NAME
-const accessKeyId = process.env.AWS_ACCESS_KEY 
-const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY 
+const bucketRegion = process.env.AWS_S3_BUCKET_REGION
+const bucketName = process.env.AWS_S3_BUCKET_NAME
+const accessKey = process.env.AWS_S3_ACCESS_KEY
+const secretKey = process.env.AWS_S3_SECRET_ACCESS_KEY
 
-const s3 = new S3({
-    region,
-    accessKeyId,
-    secretAccessKey,
+const s3 = new S3Client({
+    credentials:{
+        accessKeyId:accessKey,
+        secretAccessKey:secretKey
+    },
+    region:bucketRegion
 })
 
 
-//uploads a file to s3
-const uploadFile = (file) =>{
-    const fileStream = fs.createReadStream(file.path)
 
-    const uploadParams = {
-        Bucket : bucketName,
-        Body : fileStream,
-        Key : file.filename
+const getImageUrlS3 = asyncHandler(async(imageUrl)=>{
+    
+    const getObjectParams = {
+        Bucket: bucketName,
+        Key: imageUrl
     }
+    
+    const command = new GetObjectCommand(getObjectParams)
+    getSignedUrl(s3,command,{expiresIn:3600}).then((result=>result)).then(data=>{
+        return data
+    })
+})
 
-    return s3.upload(uploadParams).promise()
-}
-
-//download  file from s3
-const getFileStream = (fileKey) => {
-    const downParams = {
-        Key: fileKey,
-        Bucket: bucketName
-    }
-    return s3.getObject(downParams).createReadStream()
-}
-
-export {uploadFile,getFileStream}
+export {getImageUrlS3}

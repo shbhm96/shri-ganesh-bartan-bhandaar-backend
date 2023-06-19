@@ -8,7 +8,9 @@ router.get("/allusers",protectValidUser,isAdminUser,getAllUsersForAdmin)
 router.delete("/deleteUser/:id",protectValidUser,isAdminUser,deleteUserForAdmin)
 router.get("/getUser/:id",protectValidUser,isAdminUser,getUserById)
 router.get("/updateUser/:id",protectValidUser,isAdminUser,updateUserById)
-router.get("/product/create",protectValidUser,isAdminUser,createProduct)
+router.post("/product/create",protectValidUser,isAdminUser,createProduct)
+
+
 
 router.delete("/deleteProduct/:id",protectValidUser,isAdminUser,deleteProduct)
 

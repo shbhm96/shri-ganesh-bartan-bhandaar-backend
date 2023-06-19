@@ -8,11 +8,14 @@ import userRoutes from "./routes/userRoutes.js"
 import orderRoutes from "./routes/orderRoutes.js"
 import { errorHandler, notFound } from './middleware/errorMiddleware.js';
 import adminRoutes from "./routes/adminRoutes.js"
-import uploadRoutes from "./routes/uploadRoutes.js"
 import cors from 'cors'
 import morgan from "morgan";
 import multer from "multer";
-import { uploadFile,getFileStream } from "./config/s3.js";
+import { PutObjectCommand, S3Client,GetObjectCommand } from "@aws-sdk/client-s3";
+import {getSignedUrl} from "@aws-sdk/s3-request-presigner"
+import crypto from "crypto"
+import sharp from "sharp";
+
 
 
 dotenv.config()
@@ -22,6 +25,8 @@ connectMongooseDB()
 const app = express()
 
 app.use(express.json())
+app.use(express.static('public'))
+app.use("/images",express.static("images"))
 
 app.use(cors())
 
@@ -38,26 +43,57 @@ app.use("/api/users",userRoutes)
 app.use("/api/orders",orderRoutes)
 app.use("/api/admin",adminRoutes)
 
+const storage = multer.memoryStorage()
+const upload = multer({storage:storage})
+const randomImageName = (bytes = 32) => 
+{
+    return crypto.randomBytes(bytes).toString('hex')
+}
 
-const upload = multer({dest:"uploads"})
+const bucketRegion = process.env.AWS_S3_BUCKET_REGION
+const bucketName = process.env.AWS_S3_BUCKET_NAME
+const accessKey = process.env.AWS_S3_ACCESS_KEY
+const secretKey = process.env.AWS_S3_SECRET_ACCESS_KEY
 
-app.get("/images/:key",(req,res)=>{
-    const key = req.params.key
-    const readStream = getFileStream(key)
-    readStream.pipe(res)
+const s3 = new S3Client({
+    credentials:{
+        accessKeyId:accessKey,
+        secretAccessKey:secretKey
+    },
+    region:bucketRegion
 })
+
 
 app.use("/api/images",upload.single("image"),async(req,res)=>{
     const file = req.file
-    const result = await uploadFile(file)
-    console.log(result)
-    const description = req.body.description
-    res.send({imagePath:`/images/${result.Key}`})
+    console.log(req.body)
+    console.log(req.file)
+    //resize image
+    const buffer = await sharp(req.file.buffer).resize({height : 1920,width:1080,fit:"contain"}).toBuffer()
+
+
+    const imageName = randomImageName()
+
+    const params ={
+        Bucket : bucketName,
+        Key : imageName,
+        Body : buffer,
+        ContentType : req.file.mimetype
+    }
+
+    const command =  new PutObjectCommand(params)  
+
+    const imageUploadData = await s3.send(command)
+    console.log(imageUploadData)
+    if(imageUploadData){
+        return res.json({
+            imageUrl : imageName
+        })
+    }else{
+        res.status(402)
+        throw new Error("Can't Upload Image")
+    }        
 })
-
-
-//saving images in S3 buckets
-// app.use("/s3Url",s3Routes)
 
 const __dirname = path.resolve()
 app.use("/uploads",express.static(path.join(__dirname,'/uploads')))
