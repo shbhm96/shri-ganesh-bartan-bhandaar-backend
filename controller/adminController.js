@@ -2,6 +2,7 @@ import asyncHandler from "express-async-handler"
 import User from "../models/usersModel.js";
 import generateToken from "../utils/generateTokens.js";
 import Product from "../models/productModel.js";
+import Order from "../models/orderModel.js";
 
 
 const getAllUsersForAdmin = asyncHandler(async(req,res) => {
@@ -121,12 +122,65 @@ const updateProduct = asyncHandler(async (req, res) => {
     }
   })
 
+  const getAllOrders = asyncHandler(async(req,res)=>{
+    const allOrders = await Order.find({$or:[{isPaid:false},{isDelivered:false}]})
+    if(allOrders){
+        return res.json(allOrders)
+    }else{
+        res.status(401)
+        throw new Error('No Orders Exist')
+    }
+  })
+
+  const amountPaid = asyncHandler(async(req,res)=>{
+    const order = await Order.findById(req.params.id)
+    if(order){
+        if(order.isPaid){
+            res.status(301)
+            throw new Error("Order Already Paid!!")
+        }
+        order.isPaid = true
+        order.paidAt = Date.now()
+
+        const updatedOrder = await order.save()
+
+        res.json(updatedOrder)
+
+    }else{
+        res.status(401)
+        throw new Error("Order Not Found!!")
+    }
+  })
+
+  const orderDelivered = asyncHandler(async(req,res)=>{
+    const order = await Order.findById(req.params.id)
+    if(order){
+        if(order.isDelivered){
+            res.status(301)
+            throw new Error("Order Already Delivered!!")
+        }
+        order.isDelivered = true
+        order.deliveredAt = Date.now()
+
+        const updatedOrder = await order.save()
+
+        res.json(updatedOrder)
+
+    }else{
+        res.status(401)
+        throw new Error("Order Not Found!!")
+    }
+  })
+
 export {
     getAllUsersForAdmin,
+    getAllOrders,
     deleteUserForAdmin,
     getUserById,
     updateUserById,
     deleteProduct,
     createProduct,
-    updateProduct
+    updateProduct,
+    amountPaid,
+    orderDelivered
 }

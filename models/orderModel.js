@@ -59,10 +59,18 @@ const orderSchema = mongoose.Schema({
         required:true,
         default:false
     },
-    DeliveredAt:{
+    deliveredAt:{
         type:Date,
-    }
-    
+    },
+    isCancelled:{
+        type:Boolean,
+        default:false
+    },
+    cancelledBy:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"User",
+        default:"64605c07fc575f5bf80c415b"
+    }    
 },{
     timestamps:true
 })

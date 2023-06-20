@@ -69,7 +69,6 @@ app.use("/api/images",upload.single("image"),async(req,res)=>{
     console.log(req.body)
     console.log(req.file)
     //resize image
-    const buffer = await sharp(req.file.buffer).resize({height : 1920,width:1080,fit:"contain"}).toBuffer()
 
 
     const imageName = randomImageName()
@@ -77,14 +76,13 @@ app.use("/api/images",upload.single("image"),async(req,res)=>{
     const params ={
         Bucket : bucketName,
         Key : imageName,
-        Body : buffer,
+        Body : req.file.buffer,
         ContentType : req.file.mimetype
     }
 
     const command =  new PutObjectCommand(params)  
 
     const imageUploadData = await s3.send(command)
-    console.log(imageUploadData)
     if(imageUploadData){
         return res.json({
             imageUrl : imageName
@@ -96,7 +94,6 @@ app.use("/api/images",upload.single("image"),async(req,res)=>{
 })
 
 const __dirname = path.resolve()
-app.use("/uploads",express.static(path.join(__dirname,'/uploads')))
 
 if(process.env.NODE_ENV==="development"){
     app.use(express.static(path.join(__dirname,"/build")))
