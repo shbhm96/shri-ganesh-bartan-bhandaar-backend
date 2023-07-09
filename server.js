@@ -69,14 +69,24 @@ app.use("/api/images",upload.single("image"),async(req,res)=>{
     console.log(req.body)
     console.log(req.file)
     //resize image
-
+    const buffer = await sharp(req.file.buffer).resize({
+        height:510,
+        width:640,
+        fit:"contain",
+        background: { 
+            r: 255, 
+            g: 255, 
+            b: 255, 
+            alpha: 0.5 
+        }
+    }).toBuffer()
     
     const imageName = randomImageName()
 
     const params ={
         Bucket : bucketName,
         Key : imageName,
-        Body : req.file.buffer,
+        Body : buffer,
         ContentType : req.file.mimetype
     }
 
