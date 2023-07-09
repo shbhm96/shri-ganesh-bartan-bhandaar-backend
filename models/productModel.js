@@ -60,11 +60,11 @@ const productSchema = mongoose.Schema({
         required:true,  
         default:0
     },
-    // MRP:{
-    //     type:Number,
-    //     required:true,        
-    //     default:0
-    // },
+    mrp:{
+        type:Number,
+        required:true,        
+        default:1000
+    },
     price:{
         type:Number,
         required:true,        

@@ -68,7 +68,7 @@ const deleteProduct = asyncHandler(async(req,res) => {
 })
 
 const createProduct = asyncHandler(async(req,res)=>{
-    const {name,price,category,brand,countInStock,description,image} = req.body.productData
+    const {name,price,category,brand,countInStock,description,image,mrp} = req.body.productData
     const product = new Product({
         name,
         price,
@@ -80,6 +80,7 @@ const createProduct = asyncHandler(async(req,res)=>{
         rating:4,
         numReviews: 0,
         description,
+        mrp
     })
 
     if(product){
@@ -101,6 +102,7 @@ const updateProduct = asyncHandler(async (req, res) => {
       brand,
       category,
       countInStock,
+      mrp,
     } = req.body
   
     const product = await Product.findById(req.params.id)
@@ -113,6 +115,7 @@ const updateProduct = asyncHandler(async (req, res) => {
       product.brand = brand
       product.category = category
       product.countInStock = countInStock
+      product.mrp = mrp
   
       const updatedProduct = await product.save()
       return res.json(updatedProduct)
