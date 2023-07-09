@@ -7,7 +7,6 @@
   "scripts": {
     "start": "node --trace-warnings server.js",
     "server": "nodemon server.js ",
-    "build": "npm i",
     "client": "npm start --prefix frontend",
     "data:import": "node seeder",
     "data:destroy": "node seeder -d"

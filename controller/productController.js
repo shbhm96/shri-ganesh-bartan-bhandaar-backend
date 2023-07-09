@@ -40,7 +40,7 @@ const getProducts = asyncHandler(async(req,res) => {
 })
 
 const getProductById = asyncHandler(async(req,res) => {
-    const product = await Product.findById(req.params.id).select("-updatedAt -createdAt -user -brand -category")
+    const product = await Product.findById(req.params.id).select("-updatedAt -createdAt -user")
     
     const getObjectParams = {
         Bucket: bucketName,

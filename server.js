@@ -70,7 +70,7 @@ app.use("/api/images",upload.single("image"),async(req,res)=>{
     console.log(req.file)
     //resize image
 
-
+    
     const imageName = randomImageName()
 
     const params ={
