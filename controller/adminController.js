@@ -54,19 +54,6 @@ const updateUserById = asyncHandler(async(req,res)=>{
     }
 })
 
-const deleteProduct = asyncHandler(async(req,res) => {
-    const product = await Product.findById(req.params.id)
-
-    if(product){
-        await product.remove()
-        res.json({message : "Product Removed"})
-    }else{
-        res.status(404)
-        throw new Error("Product Not Found")
-    }
-    res.json(product)
-})
-
 const createProduct = asyncHandler(async(req,res)=>{
     const {name,price,category,brand,countInStock,description,image,mrp} = req.body.productData
     const product = new Product({
@@ -95,6 +82,7 @@ const createProduct = asyncHandler(async(req,res)=>{
 
 const updateProduct = asyncHandler(async (req, res) => {
     const {
+      _id,        
       name,
       price,
       description,
@@ -103,27 +91,39 @@ const updateProduct = asyncHandler(async (req, res) => {
       category,
       countInStock,
       mrp,
-    } = req.body
-  
-    const product = await Product.findById(req.params.id)
-  
-    if (product) {
-      product.name = name
-      product.price = price
-      product.description = description
-      product.image = image
-      product.brand = brand
-      product.category = category
-      product.countInStock = countInStock
-      product.mrp = mrp
-  
-      const updatedProduct = await product.save()
-      return res.json(updatedProduct)
-    } else {
+    } = req.body.productData
+      const updatedProduct = await Product.updateOne({_id},{
+        $set:{
+            name,
+            price,
+            description,
+            image,
+            brand,
+            category,
+            countInStock,
+            mrp
+        }
+      })
+    if(updateProduct){
+          return res.json(updatedProduct)
+    }else {
       res.status(404)
       throw new Error('Product not found')
     }
   })
+
+  const deleteProduct = asyncHandler(async(req,res) => {
+    const _id = req.params.id
+    const result = await Product.deleteOne({_id})
+    
+    
+    if(result){
+        res.json({result})
+    }else{
+        res.status(404)
+        throw new Error("Product Not Found")
+    }
+})
 
   const getAllOrders = asyncHandler(async(req,res)=>{
     const allOrders = await Order.find({$or:[{isPaid:false},{isDelivered:false}]})
